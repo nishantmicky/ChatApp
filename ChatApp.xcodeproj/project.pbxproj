@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		546C7A382DBBED3500418795 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 546C7A372DBBED3500418795 /* FirebaseAnalytics */; };
+		546C7A3B2DBC190500418795 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 546C7A3A2DBC190500418795 /* FirebaseAuth */; };
+		546C7A4B2DBCFC8400418795 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 546C7A4A2DBCFC8400418795 /* FirebaseDatabase */; };
+		546C7A542DBE985D00418795 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = 546C7A532DBE985D00418795 /* MessageKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		542DAF652DBBCD7C003D5971 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -37,6 +44,20 @@
 			);
 			target = 542DAF4A2DBBCD7A003D5971 /* ChatApp */;
 		};
+		542DAFDE2DBBDE2C003D5971 /* Exceptions for "ChatApp" folder in "ChatAppTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"GoogleService-Info.plist",
+			);
+			target = 542DAF632DBBCD7C003D5971 /* ChatAppTests */;
+		};
+		542DAFDF2DBBDE2C003D5971 /* Exceptions for "ChatApp" folder in "ChatAppUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"GoogleService-Info.plist",
+			);
+			target = 542DAF6D2DBBCD7D003D5971 /* ChatAppUITests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -44,6 +65,8 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				542DAF762DBBCD7D003D5971 /* Exceptions for "ChatApp" folder in "ChatApp" target */,
+				542DAFDE2DBBDE2C003D5971 /* Exceptions for "ChatApp" folder in "ChatAppTests" target */,
+				542DAFDF2DBBDE2C003D5971 /* Exceptions for "ChatApp" folder in "ChatAppUITests" target */,
 			);
 			path = ChatApp;
 			sourceTree = "<group>";
@@ -65,6 +88,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				546C7A4B2DBCFC8400418795 /* FirebaseDatabase in Frameworks */,
+				546C7A382DBBED3500418795 /* FirebaseAnalytics in Frameworks */,
+				546C7A542DBE985D00418795 /* MessageKit in Frameworks */,
+				546C7A3B2DBC190500418795 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +118,7 @@
 				542DAF4D2DBBCD7A003D5971 /* ChatApp */,
 				542DAF672DBBCD7C003D5971 /* ChatAppTests */,
 				542DAF712DBBCD7D003D5971 /* ChatAppUITests */,
+				546C7A392DBC190500418795 /* Frameworks */,
 				542DAF4C2DBBCD7A003D5971 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -103,6 +131,13 @@
 				542DAF6E2DBBCD7D003D5971 /* ChatAppUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		546C7A392DBC190500418795 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,6 +160,10 @@
 			);
 			name = ChatApp;
 			packageProductDependencies = (
+				546C7A372DBBED3500418795 /* FirebaseAnalytics */,
+				546C7A3A2DBC190500418795 /* FirebaseAuth */,
+				546C7A4A2DBCFC8400418795 /* FirebaseDatabase */,
+				546C7A532DBE985D00418795 /* MessageKit */,
 			);
 			productName = ChatApp;
 			productReference = 542DAF4B2DBBCD7A003D5971 /* ChatApp.app */;
@@ -208,6 +247,10 @@
 			);
 			mainGroup = 542DAF422DBBCD7A003D5971;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				546C7A362DBBED3500418795 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				546C7A522DBE985D00418795 /* XCRemoteSwiftPackageReference "MessageKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 542DAF4C2DBBCD7A003D5971 /* Products */;
 			projectDirPath = "";
@@ -300,6 +343,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nishant.ChatApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -326,6 +370,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nishant.ChatApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -561,6 +606,48 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		546C7A362DBBED3500418795 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.12.0;
+			};
+		};
+		546C7A522DBE985D00418795 /* XCRemoteSwiftPackageReference "MessageKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MessageKit/MessageKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		546C7A372DBBED3500418795 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 546C7A362DBBED3500418795 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		546C7A3A2DBC190500418795 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 546C7A362DBBED3500418795 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		546C7A4A2DBCFC8400418795 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 546C7A362DBBED3500418795 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		546C7A532DBE985D00418795 /* MessageKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 546C7A522DBE985D00418795 /* XCRemoteSwiftPackageReference "MessageKit" */;
+			productName = MessageKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 542DAF432DBBCD7A003D5971 /* Project object */;
 }
