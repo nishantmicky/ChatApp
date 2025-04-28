@@ -30,7 +30,7 @@ class LoginViewController: UIViewController {
     
     // MARK: - Layout
 
-    func setupViews() {
+    private func setupViews() {
         emailTextField.placeholder = "Email"
         emailTextField.borderStyle = .roundedRect
         emailTextField.autocapitalizationType = .none

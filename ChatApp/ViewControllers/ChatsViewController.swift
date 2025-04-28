@@ -9,21 +9,10 @@ import Foundation
 import UIKit
 import FirebaseAuth
 
-struct Conversation {
-    let id: String
-    let name: String
-    let otherUserEmail: String
-    let latestMessage: LatestMessage
-}
-
-struct LatestMessage {
-    let date: String
-    let text: String
-    let isRead: Bool
-}
-
 class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
+    // MARK: - UI Elements
+    
     let tableView = UITableView()
     let noUsersLabel = UILabel()
     var currentUserEmail: String
@@ -33,11 +22,19 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
     init(_ email: String) {
         self.currentUserEmail = email
         super.init(nibName: nil, bundle: nil)
+        
+        DatabaseManager.shared.getUserName(currentEmail: email, completion: { name in
+            DispatchQueue.main.async {
+                UserDefaults.standard.set(name, forKey: "name")
+            }
+        })
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,7 +58,9 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
         tableView.frame = view.bounds
     }
     
-    func setupNoUsersLabel() {
+    // MARK: - Layout
+    
+    private func setupNoUsersLabel() {
         noUsersLabel.text = "No other users found"
         noUsersLabel.textAlignment = .center
         noUsersLabel.textColor = .gray
@@ -70,7 +69,7 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
         view.addSubview(noUsersLabel)
     }
 
-    func setupTableView() {
+    private func setupTableView() {
         tableView.frame = view.bounds
         tableView.dataSource = self
         tableView.delegate = self
@@ -80,7 +79,7 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
         view.addSubview(tableView)
     }
 
-    func fetchUserChats() {
+    private func fetchUserChats() {
         DatabaseManager.shared.getAllUsers { [weak self] result in
             switch result {
             case .success(let users):
@@ -97,7 +96,7 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
         navigationController?.pushViewController(editVC, animated: true)
     }
     
-    func getAllConversations() {
+    private func getAllConversations() {
         let safeEmail = Utils.getSafeEmail(from: currentUserEmail)
         DatabaseManager.shared.getAllConversations(for: safeEmail, completion: { [weak self] result in
             switch result {
@@ -115,7 +114,7 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
         })
     }
     
-    func updateUI(dataPresent: Bool) {
+    private func updateUI(dataPresent: Bool) {
         DispatchQueue.main.async {
             if dataPresent {
                 self.noUsersLabel.isHidden = true
@@ -128,7 +127,7 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
         }
     }
     
-    func filterCurrentUser(allUsers: [User]) {
+    private func filterCurrentUser(allUsers: [User]) {
         users = allUsers.filter { $0.email != currentUserEmail }
         getAllConversations()
 

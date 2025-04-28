@@ -10,18 +10,6 @@ import UIKit
 import MessageKit
 import InputBarAccessoryView
 
-struct Message: MessageType {
-    var sender: SenderType
-    var messageId: String
-    var sentDate: Date
-    var kind: MessageKind
-}
-
-struct Sender: SenderType {
-    var senderId: String
-    var displayName: String
-}
-
 class ConversationViewController: MessagesViewController {
     var currentUserEmail: String
     var otherUserEmail: String
@@ -50,7 +38,7 @@ class ConversationViewController: MessagesViewController {
         self.messagesCollectionView.reloadData()
     }
     
-    func getMessages(_ id: String) {
+    private func getMessages(_ id: String) {
         DatabaseManager.shared.getAllMessagesForConversation(with: id, completion: { [weak self] result in
             switch result {
             case .success(let messages):
@@ -70,7 +58,10 @@ class ConversationViewController: MessagesViewController {
     }
 }
 
+// MARK: - MessageKit
+
 extension ConversationViewController: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {
+    
     var currentSender: SenderType {
         var currentEmail = ""
         var currentName = ""
@@ -113,7 +104,10 @@ extension ConversationViewController: MessagesDataSource, MessagesLayoutDelegate
     }
 }
 
+// MARK: - InputBarAccessoryView
+
 extension ConversationViewController: InputBarAccessoryViewDelegate {
+    
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
         guard !text.replacingOccurrences(of: " ", with: "").isEmpty else {
             return

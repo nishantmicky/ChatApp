@@ -23,48 +23,32 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "AABC87AF-BA00-4743-919F-1F0158E40B9F"
-            shouldBeEnabled = "No"
+            uuid = "918F74E5-50FE-45CE-9EDE-B263403F3974"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ChatApp/DatabaseManager.swift"
+            filePath = "ChatApp/EditProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "175"
-            endingLineNumber = "175"
-            landmarkName = "getAllConversations(for:completion:)"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
+            landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "7AF69D09-5324-4371-8098-27873CF5AC37"
-            shouldBeEnabled = "No"
+            uuid = "1B06BED0-3C01-4C4E-9748-1CF1C873F2B7"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ChatApp/DatabaseManager.swift"
+            filePath = "ChatApp/Storage/DatabaseManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "157"
-            endingLineNumber = "157"
-            landmarkName = "getAllConversations(for:completion:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "5520F098-D95D-405F-AEAB-0D1ABC2A7FBD"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ChatApp/DatabaseManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "163"
-            endingLineNumber = "163"
-            landmarkName = "getAllConversations(for:completion:)"
+            startingLineNumber = "56"
+            endingLineNumber = "56"
+            landmarkName = "createNewConversation(with:name:firstMessage:completion:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

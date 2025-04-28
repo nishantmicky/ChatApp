@@ -10,34 +10,41 @@ import UIKit
 import FirebaseAuth
 import FirebaseDatabase
 
-class EditProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class EditProfileViewController: UIViewController {
+    
+    // MARK: - UI Elements
 
-    let imageView = UIImageView()
+    let nameLabel = UILabel()
     let nameTextField = UITextField()
     let saveButton = UIButton(type: .system)
     let logoutButton = UIButton(type: .system)
+    
+    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Edit Profile"
         view.backgroundColor = .white
         setupViews()
+        
+        let currentEmail = UserDefaults.standard.object(forKey: "email") as! String
+        DatabaseManager.shared.getUserName(currentEmail: currentEmail, completion: { [weak self] name in
+            DispatchQueue.main.async {
+                self?.nameTextField.text = name
+                UserDefaults.standard.set(name, forKey: "name")
+            }
+        })
     }
+    
+    // MARK: - Layout
 
-    func setupViews() {
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = UIImage(systemName: "person.circle.fill")
-        imageView.tintColor = .gray
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 60
-        imageView.layer.borderWidth = 1
-        imageView.layer.borderColor = UIColor.lightGray.cgColor
-        imageView.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(selectImage))
-        imageView.addGestureRecognizer(tap)
-
+    private func setupViews() {
+        nameLabel.text = "Name"
+        nameLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        
         nameTextField.placeholder = "Enter your name"
+        nameTextField.text = UserDefaults.standard.string(forKey: "name")
         nameTextField.borderStyle = .roundedRect
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
 
@@ -57,7 +64,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         logoutButton.addTarget(self, action: #selector(handleLogout), for: .touchUpInside)
 
 
-        let stack = UIStackView(arrangedSubviews: [imageView, nameTextField, saveButton, logoutButton])
+        let stack = UIStackView(arrangedSubviews: [nameLabel, nameTextField, saveButton, logoutButton])
         stack.axis = .vertical
         stack.spacing = 24
         stack.alignment = .center
@@ -66,9 +73,6 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         view.addSubview(stack)
 
         NSLayoutConstraint.activate([
-            imageView.widthAnchor.constraint(equalToConstant: 120),
-            imageView.heightAnchor.constraint(equalToConstant: 120),
-
             nameTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.85),
 
             saveButton.widthAnchor.constraint(equalTo: nameTextField.widthAnchor),
@@ -78,25 +82,12 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         ])
     }
 
-    @objc func selectImage() {
-        let picker = UIImagePickerController()
-        picker.delegate = self
-        picker.sourceType = .photoLibrary
-        present(picker, animated: true)
-    }
-
-    var selectedImageData: Data?
-
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        picker.dismiss(animated: true)
-
-        if let image = info[.originalImage] as? UIImage {
-            imageView.image = image
-            selectedImageData = image.jpegData(compressionQuality: 0.75)
-        }
-    }
-
     @objc func saveChanges() {
+        if let currentEmail = UserDefaults.standard.object(forKey: "email") as? String,
+            let text = self.nameTextField.text, !text.isEmpty {
+            DatabaseManager.shared.updateUserName(currentEmail: currentEmail, newName: text)
+            UserDefaults.standard.set(text, forKey: "name")
+        }
         navigationController?.popViewController(animated: true)
     }
     

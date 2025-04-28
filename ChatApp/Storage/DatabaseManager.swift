@@ -8,12 +8,8 @@
 import Foundation
 import FirebaseDatabase
 
-struct User {
-    let email: String
-    let name: String
-}
-
 enum DatabaseError: String, Error {
+    case failedToLoadUsers = "Failed to load users from database."
     case failedToLoadConversations = "Failed to load conversations from database."
 }
 
@@ -35,7 +31,7 @@ final class DatabaseManager {
     public func getAllUsers(completion: @escaping (Result<[User], Error>) -> Void) {
         database.child("users").observeSingleEvent(of: .value, with: { snapshot in
             guard let usersArray = snapshot.value as? [[String: String]] else {
-                completion(.failure("Failed to load users from database." as! Error))
+                completion(.failure(DatabaseError.failedToLoadUsers))
                 return
             }
             
@@ -55,6 +51,7 @@ final class DatabaseManager {
             completion(false)
             return
         }
+        let currentName: String = UserDefaults.standard.value(forKey: "name") as! String
         
         let ref = database.child("\(Utils.getSafeEmail(from: currentUserEmail))")
         ref.observeSingleEvent(of: .value, with: { [weak self] snapshot in
@@ -90,7 +87,7 @@ final class DatabaseManager {
             let receiver_newConversation: [String: Any] = [
                 "id": conversationId,
                 "other_user_email": currentUserEmail,
-                "name": "self",
+                "name": currentName,
                 "latest_message": [
                     "date": dateString,
                     "message": message,
@@ -147,7 +144,7 @@ final class DatabaseManager {
                     return
                 }
                 
-                self?.updateConversations(name: name, conversationId: conversationId, messageId: firstMessage.messageId, message: message, dateString: dateString, currentUserEmail: currentUserEmail, completion: completion)
+                self?.updateConversations(name: currentName, conversationId: conversationId, messageId: firstMessage.messageId, message: message, dateString: dateString, currentUserEmail: currentUserEmail, completion: completion)
             })
         })
     }
@@ -203,6 +200,52 @@ final class DatabaseManager {
             })
             
             completion(.success(messages))
+        })
+    }
+    
+    public func getUserName(currentEmail: String, completion: @escaping (String?) -> Void) {
+        let ref = database.child("users")
+        ref.observeSingleEvent(of: .value, with: { snapshot in
+            guard let usersArray = snapshot.value as? [[String: Any]] else {
+                completion(nil)
+                return
+            }
+
+            for user in usersArray {
+                if let email = user["email"] as? String,
+                   email == currentEmail,
+                   let name = user["name"] as? String {
+                    completion(name)
+                    return
+                }
+            }
+
+            completion(nil)
+        })
+    }
+    
+    public func updateUserName(currentEmail: String, newName: String) {
+        let ref = database.child("users")
+        ref.observeSingleEvent(of: .value, with: { snapshot in
+            guard var usersArray = snapshot.value as? [[String: Any]] else {
+                return
+            }
+            
+            var userFound = false
+            for i in 0..<usersArray.count {
+                if let email = usersArray[i]["email"] as? String,
+                   email == currentEmail {
+                    usersArray[i]["name"] = newName
+                    userFound = true
+                    break
+                }
+            }
+
+            if userFound {
+                ref.setValue(usersArray)
+            } else {
+                print("User not found in array.")
+            }
         })
     }
     
