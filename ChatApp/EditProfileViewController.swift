@@ -103,6 +103,8 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     @objc func handleLogout() {
         do {
             try Auth.auth().signOut()
+            UserDefaults.standard.removeObject(forKey: "email")
+            UserDefaults.standard.removeObject(forKey: "name")
 
             let loginVC = LoginViewController()
             let nav = UINavigationController(rootViewController: loginVC)

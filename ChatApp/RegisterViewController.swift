@@ -79,6 +79,7 @@ class RegisterViewController: UIViewController {
                 } else {
                     print("Register success! Welcome, \(name)")
                     UserDefaults.standard.set(email, forKey: "email")
+                    UserDefaults.standard.set(name, forKey: "name")
                     let newUser = User(email: email, name: name)
                     DatabaseManager.shared.insertUser(with: newUser)
                     let chatsVC = ChatsViewController(email)

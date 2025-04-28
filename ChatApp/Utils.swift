@@ -18,8 +18,19 @@ final class Utils {
     }()
     
     class public func getSafeEmail(from email: String) -> String {
-        var safeEmail = email.replacingOccurrences(of: ".", with: "-")
-        safeEmail = safeEmail.replacingOccurrences(of: "@", with: "-")
+        var safeEmail = email.replacingOccurrences(of: ".", with: "_")
+        safeEmail = safeEmail.replacingOccurrences(of: "@", with: "_")
         return safeEmail
+    }
+    
+    class public func getConversationId(_ first: String, _ second: String) -> String {
+        let safeOtherUserEmail = Utils.getSafeEmail(from: first)
+        let safecurrentUserEmail = Utils.getSafeEmail(from: second)
+        let conversationId = "conversation_\(Utils.appendStringsLexicographically(safecurrentUserEmail, safeOtherUserEmail))"
+        return conversationId
+    }
+    
+    class private func appendStringsLexicographically(_ first: String, _ second: String) -> String {
+        return first < second ? "\(first)_\(second)" : "\(second)_\(first)"
     }
 }

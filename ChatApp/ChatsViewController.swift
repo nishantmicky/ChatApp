@@ -9,12 +9,26 @@ import Foundation
 import UIKit
 import FirebaseAuth
 
+struct Conversation {
+    let id: String
+    let name: String
+    let otherUserEmail: String
+    let latestMessage: LatestMessage
+}
+
+struct LatestMessage {
+    let date: String
+    let text: String
+    let isRead: Bool
+}
+
 class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     let tableView = UITableView()
     let noUsersLabel = UILabel()
     var currentUserEmail: String
     var users: [User] = []
+    var conversations: [Conversation] = []
     
     init(_ email: String) {
         self.currentUserEmail = email
@@ -67,18 +81,13 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
 
     func fetchUserChats() {
-        DatabaseManager.shared.getAllUsers { result in
+        DatabaseManager.shared.getAllUsers { [weak self] result in
             switch result {
             case .success(let users):
-                self.users = self.filterCurrentUser(users: users)
-                if self.users.count == 0 {
-                    self.updateUI(dataPresent: false)
-                } else {
-                    self.updateUI(dataPresent: true)
-                }
+                self?.filterCurrentUser(allUsers: users)
             case .failure(let error):
                 print("Error: \(error)")
-                self.updateUI(dataPresent: false)
+                self?.updateUI(dataPresent: false)
             }
         }
     }
@@ -86,6 +95,24 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
     @objc func editProfileTapped() {
         let editVC = EditProfileViewController()
         navigationController?.pushViewController(editVC, animated: true)
+    }
+    
+    func getAllConversations() {
+        let safeEmail = Utils.getSafeEmail(from: currentUserEmail)
+        DatabaseManager.shared.getAllConversations(for: safeEmail, completion: { [weak self] result in
+            switch result {
+            case .success(let conversations):
+                self?.conversations = conversations
+                print("Conversations: \(conversations)")
+            case .failure(let error):
+                print("Error: \(error)")
+            }
+            if self?.users.count == 0 {
+                self?.updateUI(dataPresent: false)
+            } else {
+                self?.updateUI(dataPresent: true)
+            }
+        })
     }
     
     func updateUI(dataPresent: Bool) {
@@ -101,8 +128,18 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
         }
     }
     
-    func filterCurrentUser(users: [User]) -> [User] {
-        return users.filter { $0.email != currentUserEmail }
+    func filterCurrentUser(allUsers: [User]) {
+        users = allUsers.filter { $0.email != currentUserEmail }
+        getAllConversations()
+
+        var name = ""
+        for user in users {
+            if user.email == currentUserEmail {
+                name = user.name
+                break;
+            }
+        }
+        UserDefaults.standard.set(name, forKey: "name")
     }
 
     // MARK: - TableView
@@ -115,7 +152,14 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
         let cell = tableView.dequeueReusableCell(withIdentifier: "ChatCell", for: indexPath) as! ChatCell
 
         let user = users[indexPath.row]
-        cell.configure(with: user.name, message: "Recent message...", imageURL: nil)
+        var latestMessage = ""
+        for conversation in conversations {
+            if conversation.otherUserEmail == user.email {
+                latestMessage = conversation.latestMessage.text
+                break
+            }
+        }
+        cell.configure(with: user.name, message: latestMessage, imageURL: nil)
         return cell
     }
 
@@ -124,7 +168,7 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
         tableView.deselectRow(at: indexPath, animated: true)
     
         let otherUserEmail = users[indexPath.row].email
-        let vc = ConversationViewController(otherUserEmail)
+        let vc = ConversationViewController(currentUserEmail, otherUserEmail)
         vc.title = users[indexPath.row].name
         vc.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(vc, animated: true)

@@ -19,25 +19,21 @@ struct Message: MessageType {
 
 struct Sender: SenderType {
     var senderId: String
-    var photoURL: String
     var displayName: String
 }
 
 class ConversationViewController: MessagesViewController {
-    
+    var currentUserEmail: String
     var otherUserEmail: String
+    var conversationId: String
     var messages = [Message]()
-    var selfSender: Sender? = {
-        guard let currentUserEmail = UserDefaults.standard.value(forKey: "email") as? String else {
-            return nil
-        }
-        
-        return Sender(senderId: currentUserEmail, photoURL: "", displayName: "")
-    }()
     
-    init(_ otherUserEmail: String) {
+    init(_ currentUserEmail: String, _ otherUserEmail: String) {
+        self.currentUserEmail = currentUserEmail
         self.otherUserEmail = otherUserEmail
+        self.conversationId = Utils.getConversationId(currentUserEmail, otherUserEmail)
         super.init(nibName: nil, bundle: nil)
+        getMessages(self.conversationId)
     }
     
     @MainActor required init?(coder: NSCoder) {
@@ -54,15 +50,37 @@ class ConversationViewController: MessagesViewController {
         self.messagesCollectionView.reloadData()
     }
     
+    func getMessages(_ id: String) {
+        DatabaseManager.shared.getAllMessagesForConversation(with: id, completion: { [weak self] result in
+            switch result {
+            case .success(let messages):
+                guard !messages.isEmpty else {
+                    return
+                }
+                self?.messages = messages
+                
+                DispatchQueue.main.async {
+                    self?.messagesCollectionView.reloadDataAndKeepOffset()
+                    self?.messagesCollectionView.scrollToLastItem()
+                }
+            case .failure(let error):
+                print("Error: \(error)")
+            }
+        })
+    }
 }
 
 extension ConversationViewController: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {
     var currentSender: SenderType {
-        if let sender = selfSender {
-            return sender
+        var currentEmail = ""
+        var currentName = ""
+        if let email = UserDefaults.standard.object(forKey: "email") as? String {
+            currentEmail = email
         }
-
-        return Sender(senderId: "1", photoURL: "", displayName: "")
+        if let name = UserDefaults.standard.object(forKey: "name") as? String {
+            currentName = name
+        }
+        return Sender(senderId: currentEmail, displayName: currentName)
     }
     
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
@@ -72,34 +90,44 @@ extension ConversationViewController: MessagesDataSource, MessagesLayoutDelegate
     func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
         return messages.count
     }
+    
+    func configureAvatarView(
+        _ avatarView: AvatarView,
+        for message: MessageType,
+        at indexPath: IndexPath,
+        in messagesCollectionView: MessagesCollectionView
+    ) {
+        let sender = message.sender
+        let components = sender.displayName.components(separatedBy: " ")
+        var initials = ""
+
+        if let first = components.first?.first {
+            initials.append(first)
+        }
+        if components.count > 1, let last = components.last?.first {
+            initials.append(last)
+        }
+
+        let avatar = Avatar(initials: initials.uppercased())
+        avatarView.set(avatar: avatar)
+    }
 }
 
 extension ConversationViewController: InputBarAccessoryViewDelegate {
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
-        guard !text.replacingOccurrences(of: " ", with: "").isEmpty,
-        let sender = selfSender, let messageId = createMessageId() else {
+        guard !text.replacingOccurrences(of: " ", with: "").isEmpty else {
             return
         }
         
-        let message = Message(sender: sender, messageId: messageId, sentDate: Date(), kind: .text(text))
-        DatabaseManager.shared.createNewConversation(with: otherUserEmail, firstMessage: message, completion: { success in
+        let messageId = Utils.getConversationId(currentUserEmail, otherUserEmail)
+        let message = Message(sender: currentSender, messageId: messageId, sentDate: Date(), kind: .text(text))
+        DatabaseManager.shared.createNewConversation(with: otherUserEmail, name: self.title ?? "User",firstMessage: message, completion: { success in
             if success {
+                inputBar.inputTextView.text = ""
                 print("Message sent")
             } else {
                 print("Failed to sent message")
             }
         })
-    }
-    
-    private func createMessageId() -> String? {
-        guard let currentUserEmail = UserDefaults.standard.value(forKey: "email") as? String else {
-            return nil
-        }
-        
-        let dateString = Utils.dateFormatter.string(from: Date())
-        let safeOtherUserEmail = Utils.getSafeEmail(from: otherUserEmail)
-        let safecurrentUserEmail = Utils.getSafeEmail(from: currentUserEmail)
-        let messageId = "\(safeOtherUserEmail)_\(safecurrentUserEmail)_\(dateString)"
-        return messageId
     }
 }

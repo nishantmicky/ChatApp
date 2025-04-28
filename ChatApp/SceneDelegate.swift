@@ -19,7 +19,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = UINavigationController(rootViewController: LoginViewController())
+        var rootController: UIViewController = LoginViewController()
+        if let email = UserDefaults.standard.object(forKey: "email") as? String {
+            rootController = ChatsViewController(email)
+        }
+        
+        window.rootViewController = UINavigationController(rootViewController: rootController)
         self.window = window
         window.makeKeyAndVisible()
     }
