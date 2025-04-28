@@ -85,7 +85,6 @@ class LoginViewController: UIViewController {
                 self?.errorLabel.text = "Login failed: \(error.localizedDescription)"
             } else {
                 self?.errorLabel.text = ""
-                UserDefaults.standard.set(email, forKey: "email")
                 self?.navigateToHome(email: email)
             }
         }
@@ -99,10 +98,16 @@ class LoginViewController: UIViewController {
     }
     
     private func navigateToHome(email: String) {
-        let chatsVC = ChatsViewController(email)
-        let navController = UINavigationController(rootViewController: chatsVC)
-        navController.modalPresentationStyle = .fullScreen
-        self.present(navController, animated: true)
+        UserDefaults.standard.set(email, forKey: "email")
+        DatabaseManager.shared.getUserName(currentEmail: email, completion: { name in
+            DispatchQueue.main.async {
+                UserDefaults.standard.set(name, forKey: "name")
+                let chatsVC = ChatsViewController(email)
+                let navController = UINavigationController(rootViewController: chatsVC)
+                navController.modalPresentationStyle = .fullScreen
+                self.present(navController, animated: true)
+            }
+        })
     }
 }
 

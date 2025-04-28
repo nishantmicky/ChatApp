@@ -51,7 +51,10 @@ final class DatabaseManager {
             completion(false)
             return
         }
-        let currentName: String = UserDefaults.standard.value(forKey: "name") as! String
+        var currentName = ""
+        if let userName = UserDefaults.standard.value(forKey: "name") as? String {
+            currentName = userName
+        }
         
         let ref = database.child("\(Utils.getSafeEmail(from: currentUserEmail))")
         ref.observeSingleEvent(of: .value, with: { [weak self] snapshot in

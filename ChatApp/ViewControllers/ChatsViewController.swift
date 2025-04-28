@@ -22,12 +22,6 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
     init(_ email: String) {
         self.currentUserEmail = email
         super.init(nibName: nil, bundle: nil)
-        
-        DatabaseManager.shared.getUserName(currentEmail: email, completion: { name in
-            DispatchQueue.main.async {
-                UserDefaults.standard.set(name, forKey: "name")
-            }
-        })
     }
     
     required init?(coder: NSCoder) {
@@ -130,15 +124,6 @@ class ChatsViewController: UIViewController, UITableViewDataSource, UITableViewD
     private func filterCurrentUser(allUsers: [User]) {
         users = allUsers.filter { $0.email != currentUserEmail }
         getAllConversations()
-
-        var name = ""
-        for user in users {
-            if user.email == currentUserEmail {
-                name = user.name
-                break;
-            }
-        }
-        UserDefaults.standard.set(name, forKey: "name")
     }
 
     // MARK: - TableView

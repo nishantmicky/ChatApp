@@ -27,13 +27,11 @@ class EditProfileViewController: UIViewController {
         view.backgroundColor = .white
         setupViews()
         
-        let currentEmail = UserDefaults.standard.object(forKey: "email") as! String
-        DatabaseManager.shared.getUserName(currentEmail: currentEmail, completion: { [weak self] name in
+        if let name = UserDefaults.standard.object(forKey: "name") as? String {
             DispatchQueue.main.async {
-                self?.nameTextField.text = name
-                UserDefaults.standard.set(name, forKey: "name")
+                self.nameTextField.text = name
             }
-        })
+        }
     }
     
     // MARK: - Layout
