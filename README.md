@@ -15,6 +15,7 @@ A real time chat application where users can register/login and have one-to-one 
 - Used `InputBarAccessoryView` to handle send action in messaging.
 
 ## Steps to run project
+- Clone repo from `https://github.com/nishantmicky/ChatApp.git`.
 - Open `ChatApp.xcodeproj` directly in Xcode and run the application target on simulator. If you want to run it on device, you need to add development team id in Signing and Capabilities.
 - Register user and you will see list of other registered users and their latest message on home screen. Currently I have already registered a user with `name: Nishant Kumar` and `email: nishant@gmail.com`. You can go on edit and logout to register another users.
 - Click on name and you can send one-to-one message to that user.
